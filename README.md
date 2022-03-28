@@ -2,7 +2,7 @@
 Regression test specified AWS resources based on pre-written modules
 
 #### Description
-Execute regression testing against avaiable resources in AWS, such as specifying Auto Scaling Group, Load Balancers, and EC2s. This tool may also be incorporated into a CI/CD pipeline. This tools is broken into modules, one per cloud resource i.e., Auto Scaling Groups. Modules may be common to multiple cloud resources i.e., any resource using an Auto Scaling Group.
+Execute regression testing against avaiable resources in AWS, such as specifying Auto Scaling Group, Load Balancers, and EC2s. This tool may also be incorporated into a CI/CD pipeline. Modules may be common to multiple cloud resources i.e., any resource using an Auto Scaling Group.
 
 #### Intended Audience
 * Developers
