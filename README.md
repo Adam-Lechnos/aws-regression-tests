@@ -19,7 +19,7 @@ Execute regression testing against avaiable resources in AWS, such as specifying
  
 #### Jenkins Pipeline Automation
  The approriate module is called by the Jenkins pipeline, contigent upon defined cloud resources.
- * For example, `Auto Scaling Group` based resources will load the `aws-regression-tests-*asg*.py` module.
+ * For example, `Auto Scaling Group` based resources will load the `aws-regression-tests-asg.py` module.
 
 #### Modules
 
