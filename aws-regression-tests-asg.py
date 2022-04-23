@@ -65,10 +65,36 @@ for item in InstanceCheck:
                     runningList.append(v2)
 
 runningTest = [x for x in runningList if 'running' != x]
+print("\n====Ensuring all instances in the ASG are in a running state====")
+#time.sleep(10)
 if len(runningTest) > 0:
-    sys.exit("====Not all ASG instances are in a running state, aborting====")
-else:
-    print("====ASG instances are in a running state====\n")
+    timeout = time.time() + 60*3
+    while len(runningTest) > 0:
+        #print(runningTest)
+        del responseEC2ops
+        del InstanceCheck
+        del runningTest
+        responseEC2ops = clientEC2.describe_instance_status(
+        InstanceIds=instanceList,
+        IncludeAllInstances=True
+        )
+
+        InstanceCheck=responseEC2ops['InstanceStatuses']
+
+        runningList = []
+
+        for item in InstanceCheck:
+            for k,v in item.items():
+                if k == 'InstanceState':
+                    for k2,v2 in v.items():
+                        if k2 == 'Name':
+                            runningList.append(v2)
+
+        runningTest = [x for x in runningList if 'running' != x]
+        if time.time() > timeout:
+            sys.exit("====Not all ASG instances are in a running state, aborting====")
+
+print("ASG instances are in the running state\n")
 
 del responseDescribeASG
 
@@ -89,9 +115,9 @@ for item in getASGhealthyec2s:
             ASGHealthyList = ASGhealthyList.append(v)
 
 if len(ASGhealthyList) == getASGdesired:
-    print(f"====ASG instances marked healthy and match the desired capacity====\n")
+    print("====ASG instances marked healthy and match the desired capacity====\n")
 else:
-    sys.exit(f"====Not all ASG instances marked healthy accoding to the desired capacity, aborting====")
+    sys.exit("====Not all ASG instances marked healthy accoding to the desired capacity, aborting====")
 
 suspendedProcessesOut=responseDescribeASG['AutoScalingGroups'][0]['SuspendedProcesses']
 
@@ -104,7 +130,7 @@ for item in suspendedProcessesOut:
             
 
 spList = spList[:-2] 
-print(f"====Suspended processes check====")
+print("====Suspended processes check====")
 
 if len(suspendedProcessesOut) > 0:
     print(f"Caution, suspended processses present\n  {spList}")
@@ -238,7 +264,7 @@ else:
 
     #print(instanceList)
 
-    timeout = time.time() + 60*3
+    timeout = time.time() + 60*6
     while instancePostChange in instanceList:
         del instanceList
         instanceList = []
@@ -256,14 +282,6 @@ else:
         time.sleep(2)
         if time.time() > timeout:
             sys.exit(f"\nASG healthcheck test failed, aborting")
-
-        # instancePostChange=responseDescribeASGPostChange['AutoScalingGroups'][0]['Instances'][0]['InstanceId']
-        # instanceHealthPostChange=responseDescribeASGPostChange['AutoScalingGroups'][0]['Instances'][0]['HealthStatus']
-        # instanceStatusPostChange=responseDescribeASGPostChange['AutoScalingGroups'][0]['Instances'][0]['LifecycleState']
-
-        # print(f"Instance Id: {instancePostChange}")
-        # print(f"Instance Health {instanceHealthPostChange}")
-        # print(f"ASG Service State: {instanceStatusPostChange}")
         
     print(f"\nASG healthcheck test passed")
     
@@ -352,8 +370,7 @@ for item in InstanceCheckFinal:
 
 runningTestFinal = [x for x in runningListFinal if 'running' != x]
 print("\n====Ensuring all instances in the ASG are in a running state====")
-
-time.sleep(10)
+#time.sleep(10)
 if len(runningTestFinal) > 0:
     timeout = time.time() + 60*3
     while len(runningTestFinal) > 0:
